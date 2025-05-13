@@ -31,8 +31,7 @@ jobs:
           nuitka-version: main
           script-name: file_randomizer
           mode: app
-          enable-plugins:
-            - pyside6
+          enable-plugins: pyside6
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
