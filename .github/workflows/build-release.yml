@@ -2,18 +2,13 @@ name: Build with Nuitka
 on: [push]
 
 jobs:
-  pyinstaller-build:
+  build:
 
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
 
     runs-on: ${{ matrix.os }}
-    
-    steps:
-
-jobs:
-  build:
 
     steps:
       - name: Check-out repository
