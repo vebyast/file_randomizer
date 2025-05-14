@@ -86,7 +86,7 @@ impl eframe::App for FileRandomizer {
             ui.horizontal(|ui| {
                 if ui.button("Open directory").clicked() {
                     if let Some(d) = &self.dir {
-                        showfile::show_path_in_file_manager(d);
+                        let _ = open::that(d);
                     }
                 }
 
