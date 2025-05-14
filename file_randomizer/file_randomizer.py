@@ -2,66 +2,50 @@ import pathlib
 import random
 import appdirs
 import shelve
-import sys
 
-from PySide6 import QtWidgets
-from PySide6 import QtCore
-from PySide6.QtWidgets import QApplication, QFileDialog
+import tkinter
+from tkinter import ttk
+import tkinter.filedialog
 
 user_data_dir = pathlib.Path(appdirs.user_data_dir('FileRandomizer', 'Vebyast'))
 user_data_dir.mkdir(parents=True, exist_ok=True)
 
-class FileRandomizerWidget(QtWidgets.QWidget):
-    def __init__(self, user_data_shelve):
-        super().__init__()
 
-        self.user_data_shelve = user_data_shelve
+def build_app(root, user_data_shelve):
+    root.title("File Randomizer")
 
-        if 'target_directory' not in self.user_data_shelve:
-            self.user_data_shelve['target_directory'] = None
-        if 'picked_file' not in self.user_data_shelve:
-            self.user_data_shelve['picked_file'] = None
+    mainframe = ttk.Frame(root, padding="3 3 12 12")
+    mainframe.grid(column=0, row=0, sticky=(tkinter.N, tkinter.W, tkinter.E, tkinter.S))
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
 
-        self.select_dir_button = QtWidgets.QPushButton("Select Directory")
-        self.dir_label = QtWidgets.QLabel(self.user_data_shelve['target_directory'],
-                                          alignment=QtCore.Qt.AlignRight)
+    selected_dir = tkinter.StringVar()
+    selected_file = tkinter.StringVar()
 
-        self.randomize_button = QtWidgets.QPushButton("Randomize File")
-        self.file_label = QtWidgets.QLabel(self.user_data_shelve['picked_file'], alignment=QtCore.Qt.AlignRight)
+    selected_dir.set(user_data_shelve['target_directory'])
 
-        self.root_layout = QtWidgets.QVBoxLayout(self)
+    def select_dir_callback():
+        user_data_shelve['target_directory'] = tkinter.filedialog.askdirectory(mustexist=True)
+        selected_dir.set(user_data_shelve['target_directory'])
 
-        self.dir_layout = QtWidgets.QHBoxLayout()
-        self.root_layout.addLayout(self.dir_layout)
-        self.dir_layout.addWidget(self.select_dir_button)
-        self.dir_layout.addWidget(self.dir_label)
-        
-        self.file_layout = QtWidgets.QHBoxLayout()
-        self.root_layout.addLayout(self.file_layout)
-        self.file_layout.addWidget(self.randomize_button)
-        self.file_layout.addWidget(self.file_label)
-
-        self.select_dir_button.clicked.connect(self.choose_directory)
-        self.randomize_button.clicked.connect(self.randomize_file)
-
-    @QtCore.Slot()
-    def choose_directory(self):
-        self.user_data_shelve['target_directory'] = QFileDialog.getExistingDirectory()
-        self.dir_label.setText(self.user_data_shelve['target_directory'])
-
-    @QtCore.Slot()
-    def randomize_file(self):
-        d = pathlib.Path(self.user_data_shelve['target_directory'])
+    def pick_file_callback():
+        d = pathlib.Path(user_data_shelve['target_directory'])
         files = [p for p in d.iterdir() if p.is_file()]
-        self.user_data_shelve['picked_file'] = random.choice(files).name
-        self.file_label.setText(self.user_data_shelve['picked_file'])
+        user_data_shelve['picked_file'] = random.choice(files).name
+        selected_file.set(user_data_shelve['picked_file'])
+
+    ttk.Label(mainframe, textvariable=selected_dir).grid(column=2, row=1, sticky=(tkinter.W, tkinter.E))
+    ttk.Label(mainframe, textvariable=selected_file).grid(column=2, row=2, sticky=(tkinter.W, tkinter.E))
+    ttk.Button(mainframe, text="Select Directory", command=select_dir_callback).grid(column=1, row=1, sticky=(tkinter.W, tkinter.E))
+    ttk.Button(mainframe, text="Pick Random File", command=pick_file_callback).grid(column=1, row=2, sticky=(tkinter.W, tkinter.E))
 
 def main():
+
+    root = tkinter.Tk()
+    
     with shelve.open(user_data_dir / 'settings') as user_data_shelve:
-        app = QApplication(sys.argv)
-        widget = FileRandomizerWidget(user_data_shelve)
-        widget.show()
-        sys.exit(app.exec())
+        build_app(root, user_data_shelve)
+        root.mainloop()        
 
 
 if __name__ == "__main__":
