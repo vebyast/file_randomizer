@@ -7,6 +7,8 @@ import tkinter
 from tkinter import ttk
 import tkinter.filedialog
 
+import showinfm
+
 user_data_dir = pathlib.Path(appdirs.user_data_dir('FileRandomizer', 'Vebyast'))
 user_data_dir.mkdir(parents=True, exist_ok=True)
 
@@ -48,6 +50,12 @@ def build_app(root, user_data_shelve):
             user_data_shelve[SELECTED_FILE_KEY] = random.choice(files).name
             selected_file.set(user_data_shelve[SELECTED_FILE_KEY])
 
+    def open_dir_callback():
+        showinfm.show_in_file_manager(user_data_shelve[SELECTED_DIR_KEY], open_not_select_directory=True)
+
+    def open_file_callback():
+        showinfm.show_in_file_manager(user_data_shelve[SELECTED_FILE_KEY])
+
 
     ttk.Label(mainframe, textvariable=selected_dir).grid(column=2, row=1, sticky=(tkinter.W, tkinter.E))
     ttk.Button(mainframe, text="Select Directory", command=select_dir_callback).grid(column=1, row=1, sticky=(tkinter.W, tkinter.E))
@@ -55,10 +63,13 @@ def build_app(root, user_data_shelve):
     ttk.Label(mainframe, textvariable=selected_file).grid(column=2, row=2, sticky=(tkinter.W, tkinter.E))
     ttk.Button(mainframe, text="Pick Random File", command=pick_file_callback).grid(column=1, row=2, sticky=(tkinter.W, tkinter.E))
 
+    ttk.Button(mainframe, text="Open Directory", command=open_dir_callback).grid(column=1, row=3, sticky=(tkinter.W, tkinter.E))
+    ttk.Button(mainframe, text="Open File", command=open_file_callback).grid(column=2, row=3, sticky=(tkinter.W, tkinter.E))
+
 def main():
 
     root = tkinter.Tk()
-    
+
     with shelve.open(user_data_dir / 'settings') as user_data_shelve:
         build_app(root, user_data_shelve)
         root.mainloop()        
