@@ -8,12 +8,15 @@ dependencies = ["appdirs>=1.4.4", "pyside6>=6.9.0"]
 
 [dependency-groups]
 dev = [
-  "nuitka>=2.7.2",
   "pylsp-rope>=0.1.17",
   "python-lsp-ruff>=2.2.2",
   "python-lsp-server>=1.12.2",
   "pytype>=2024.10.11",
 ]
+build = [
+    "pyinstaller>=6.13.0",
+]
+
 
 [project.gui-scripts]
 file-randomizer = "file_randomizer.file_randomizer:main"

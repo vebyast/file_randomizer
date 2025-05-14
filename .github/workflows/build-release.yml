@@ -1,4 +1,4 @@
-name: Build with Nuitka
+name: Build
 on: [push]
 
 jobs:
@@ -17,7 +17,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          # Install a specific version of uv.
           version: "0.7.3"
           enable-cache: true
           cache-dependency-glob: "uv.lock"
@@ -30,10 +29,15 @@ jobs:
       - name: Build a requirements.txt for pyinstaller
         run: uv pip compile pyproject.toml -o requirements.txt
 
-      - name: Create Executable
-        uses: sayyid5416/pyinstaller@v1
+      - name: Install build requirements
+        run: uv sync --group build
+
+      - name: Run pyinstaller
+        run: uv run pyinstaller --onefile --windowed file_randomizer/file_randomizer.py
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          python_ver: '3.10'
-          requirements: 'requirements.txt'
-          upload_exe_with_name: 'FileRandomizer'
-          options: --onefile, --name "FileRandomizer", --windowed, 
+          name: ${{ runner.os }} Build
+          path: dist/*
+          include-hidden-files: true          
