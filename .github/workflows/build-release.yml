@@ -33,7 +33,7 @@ jobs:
         run: uv sync --group build
 
       - name: Run pyinstaller
-        run: uv run pyinstaller --onefile --windowed --hidden-import tkinter --hidden-import tkinter.ttk --hidden-import tkinter.filedialog file_randomizer/file_randomizer.py
+        run: uv run pyinstaller --onedir --windowed --hidden-import tkinter --hidden-import tkinter.ttk --hidden-import tkinter.filedialog file_randomizer/file_randomizer.py
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
