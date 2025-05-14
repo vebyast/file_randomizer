@@ -16,7 +16,7 @@ jobs:
           os: macos-13
         - build: macos-aarch64
           os: macos-14
-        - build: win-msvc
+        - build: win
           os: windows-2022
 
     runs-on: ${{ matrix.os }}
