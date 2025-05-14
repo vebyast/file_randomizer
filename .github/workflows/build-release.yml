@@ -2,15 +2,31 @@ name: Build
 on: [push]
 
 jobs:
-  build-linux:
+  build:
 
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build: [linux-x86_64, linux-aarch64, macos-x86_64, macos-aarch64, win]
+        include:
+        - build: linux-x86_64
+          os: ubuntu-24.04
+        - build: linux-aarch64
+          os: ubuntu-24.04-arm
+        - build: macos-x86_64
+          os: macos-13
+        - build: macos-aarch64
+          os: macos-14
+        - build: win-msvc
+          os: windows-2022
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Check-out repository
         uses: actions/checkout@v4
 
       - name: Install tkinter
+        if: startsWith(matrix.os, 'ubuntu')
         run: sudo apt-get install --yes python3-tk
 
       - name: Install uv
